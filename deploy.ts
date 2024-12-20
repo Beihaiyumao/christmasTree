@@ -1,22 +1,33 @@
 import { serve } from "https://deno.land/std/http/server.ts";
-import { readFileStr } from "https://deno.land/std/fs/mod.ts";
+import { extname } from "https://deno.land/std/path/mod.ts";
 
+// 更新为 Deno.readTextFile
 const PORT = 8000;
 
-// 处理根目录请求并返回 index.html
+const mimeTypes: Record<string, string> = {
+  ".html": "text/html",
+  ".css": "text/css",
+  ".js": "application/javascript",
+  ".json": "application/json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+};
+
 serve(async (req) => {
   const url = new URL(req.url);
-  
-  if (url.pathname === "/") {
-    const indexHtml = await readFileStr("./index.html");
-    return new Response(indexHtml, {
-      headers: {
-        "Content-Type": "text/html; charset=UTF-8",
-      },
-    });
-  }
-  
-  return new Response("Not Found", { status: 404 });
-});
+  let filePath = url.pathname === "/" ? "/index.html" : url.pathname;
+  const fileExt = extname(filePath);
 
-console.log(`Server running on http://localhost:${PORT}`);
+  try {
+    // 使用 Deno.readTextFile 替代 readFileStr
+    const file = await Deno.readTextFile("." + filePath);
+    const contentType = mimeTypes[fileExt] || "application/octet-stream";
+    return new Response(file, {
+      headers: { "Content-Type": contentType },
+    });
+  } catch (e) {
+    return new Response("Not Found", { status: 404 });
+  }
+});

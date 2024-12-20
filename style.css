@@ -1,0 +1,16 @@
+/* 样式文件 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #161616;
+  color: #c5a880;
+  font-family: sans-serif;
+}
